@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace AutoReservation.Dal.Entities
 {
@@ -8,15 +9,18 @@ namespace AutoReservation.Dal.Entities
         public DateTime Geburtsdatum { get; set; }
         public string Nachname { get; set; }
         public string Vorname { get; set; }
-        public int RowVersion { get; set; }
+        public ICollection<Reservation> Reservationen { get; set; }
+        public byte[] RowVersion { get; set; }
 
-        public Kunde(int id, DateTime geburtsdatum, string nachname, string vorname, int rowVersion)
+        public Kunde(int id, DateTime geburtsdatum, string nachname, string vorname,
+            ICollection<Reservation> reservationen, byte[] rowVersion)
         {
             Id = id;
             Geburtsdatum = geburtsdatum;
             Nachname = nachname ?? throw new ArgumentNullException(nameof(nachname));
             Vorname = vorname ?? throw new ArgumentNullException(nameof(vorname));
-            RowVersion = rowVersion;
+            Reservationen = reservationen ?? throw new ArgumentNullException(nameof(reservationen));
+            RowVersion = rowVersion ?? throw new ArgumentNullException(nameof(rowVersion));
         }
     }
 }
