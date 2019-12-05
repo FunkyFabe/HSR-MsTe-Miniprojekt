@@ -11,10 +11,10 @@ namespace AutoReservation.Dal.Entities
         [Required]
         public int ReservationsNr { get; set; }
         [Required]
-        [Column(TypeName = "DATETIME2(7")]
+        [Column(TypeName = "DATETIME2(7)")]
         public DateTime Bis { get; set; }
         [Required]
-        [Column(TypeName = "DATETIME2(7")]
+        [Column(TypeName = "DATETIME2(7)")]
         public DateTime Von { get; set; }
         [Required]
         public int KundenId { get; set; }
@@ -24,6 +24,7 @@ namespace AutoReservation.Dal.Entities
         public int AutoId { get; set; }
         [Required]
         public Auto Auto { get; set; }
+        [Timestamp]
         [Column(TypeName = "TIMESTAMP")]
         public byte[] RowVersion { get; set; }
 

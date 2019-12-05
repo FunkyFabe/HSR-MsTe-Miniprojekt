@@ -12,7 +12,7 @@ namespace AutoReservation.Dal.Entities
         [Required]
         public int Id { get; set; }
         [Required]
-        [Column(TypeName = "DATETIME2(7")]
+        [Column(TypeName = "DATETIME2(7)")]
         public DateTime Geburtsdatum { get; set; }
         [Required]
         [Column(TypeName = "NVARCHAR(20)")]
@@ -22,6 +22,7 @@ namespace AutoReservation.Dal.Entities
         public string Vorname { get; set; }
         [Required]
         public ICollection<Reservation> Reservationen { get; set; }
+        [Timestamp]
         [Column(TypeName = "TIMESTAMP")]
         public byte[] RowVersion { get; set; }
 

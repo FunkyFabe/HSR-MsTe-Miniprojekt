@@ -12,6 +12,16 @@ namespace AutoReservation.Dal
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder
+                .Entity<LuxusklasseAuto>()
+                .HasBaseType<Auto>();
+
+            modelBuilder
+                .Entity<MittelklasseAuto>()
+                .HasBaseType<Auto>();
+            modelBuilder
+                .Entity<StandardAuto>()
+                .HasBaseType<Auto>();
         }
     }
 }
