@@ -1,18 +1,31 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AutoReservation.Dal.Entities
 {
+    [Table("Reservation", Schema = "dbo")]
     public class Reservation
     {
-        [Key] [Required] public int ReservationsNr { get; set; }
-        [Required] public DateTime Bis { get; set; }
-        [Required] public DateTime Von { get; set; }
-        [Required] public int KundenId { get; set; }
-        [Required] public Kunde Kunde { get; set; }
-        [Required] public int AutoId { get; set; }
-        [Required] public Auto Auto { get; set; }
-        [Required] public byte[] RowVersion { get; set; }
+        [Key]
+        [Required]
+        public int ReservationsNr { get; set; }
+        [Required]
+        [Column(TypeName = "DATETIME2(7")]
+        public DateTime Bis { get; set; }
+        [Required]
+        [Column(TypeName = "DATETIME2(7")]
+        public DateTime Von { get; set; }
+        [Required]
+        public int KundenId { get; set; }
+        [Required]
+        public Kunde Kunde { get; set; }
+        [Required]
+        public int AutoId { get; set; }
+        [Required]
+        public Auto Auto { get; set; }
+        [Column(TypeName = "TIMESTAMP")]
+        public byte[] RowVersion { get; set; }
 
         public Reservation(int reservationsNr, DateTime bis, DateTime von, int kundenId, Kunde kunde, int autoId,
             Auto auto, byte[] rowVersion)

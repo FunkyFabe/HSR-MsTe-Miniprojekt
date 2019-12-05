@@ -8,7 +8,6 @@ namespace AutoReservation.Dal
     {
         public DbSet<Auto> Autos { get; set; }
         public DbSet<Kunde> Kunden { get; set; }
-
         public DbSet<Reservation> Reservationen { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
