@@ -27,6 +27,7 @@ namespace AutoReservation.Dal.Entities
         [Column(TypeName = "TIMESTAMP")]
         public byte[] RowVersion { get; set; }
 
+        public Reservation(){}
         public Reservation(int reservationsNr, DateTime bis, DateTime von, int kundenId, Kunde kunde, int autoId,
             Auto auto, byte[] rowVersion)
         {
@@ -34,10 +35,10 @@ namespace AutoReservation.Dal.Entities
             Bis = bis;
             Von = von;
             KundenId = kundenId;
-            Kunde = kunde ?? throw new ArgumentNullException(nameof(kunde));
+            Kunde = kunde;
             AutoId = autoId;
-            Auto = auto ?? throw new ArgumentNullException(nameof(auto));
-            RowVersion = rowVersion ?? throw new ArgumentNullException(nameof(rowVersion));
+            Auto = auto;
+            RowVersion = rowVersion;
         }
     }
 }

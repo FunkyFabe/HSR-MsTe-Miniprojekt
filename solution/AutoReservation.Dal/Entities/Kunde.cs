@@ -25,15 +25,16 @@ namespace AutoReservation.Dal.Entities
         [Column(TypeName = "TIMESTAMP")]
         public byte[] RowVersion { get; set; }
 
+        public Kunde(){}
         public Kunde(int id, DateTime geburtsdatum, string nachname, string vorname,
             ICollection<Reservation> reservationen, byte[] rowVersion)
         {
             Id = id;
             Geburtsdatum = geburtsdatum;
-            Nachname = nachname ?? throw new ArgumentNullException(nameof(nachname));
-            Vorname = vorname ?? throw new ArgumentNullException(nameof(vorname));
-            Reservationen = reservationen ?? throw new ArgumentNullException(nameof(reservationen));
-            RowVersion = rowVersion ?? throw new ArgumentNullException(nameof(rowVersion));
+            Nachname = nachname;
+            Vorname = vorname;
+            Reservationen = reservationen;
+            RowVersion = rowVersion;
         }
     }
 }

@@ -21,13 +21,14 @@ namespace AutoReservation.Dal.Entities
         [Column(TypeName = "TIMESTAMP")]
         public byte[] RowVersion { get; set; }
 
+        protected Auto() {}
         protected Auto(int id, string marke, int tagestarif, ICollection<Reservation> reservationen, byte[] rowVersion)
         {
             Id = id;
-            Marke = marke ?? throw new ArgumentNullException(nameof(marke));
+            Marke = marke;
             Tagestarif = tagestarif;
-            Reservationen = reservationen ?? throw new ArgumentNullException(nameof(reservationen));
-            RowVersion = rowVersion ?? throw new ArgumentNullException(nameof(rowVersion));
+            Reservationen = reservationen;
+            RowVersion = rowVersion;
         }
     }
 }
