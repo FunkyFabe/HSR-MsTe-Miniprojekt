@@ -5,6 +5,7 @@ namespace AutoReservation.BusinessLayer
 {
     public abstract class ManagerBase
     {
+        //Mebey here as Generic makes it easier
         protected static OptimisticConcurrencyException<T> CreateOptimisticConcurrencyException<T>(AutoReservationContext context, T entity)
             where T : class
         {
