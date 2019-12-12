@@ -17,7 +17,7 @@ namespace AutoReservation.Dal.Entities
         [Column(TypeName = "DATETIME2(7)")]
         public DateTime Von { get; set; }
         [Required]
-        public int KundenId { get; set; }
+        public int KundeId { get; set; }
         [Required]
         public Kunde Kunde { get; set; }
         [Required]
@@ -29,13 +29,13 @@ namespace AutoReservation.Dal.Entities
         public byte[] RowVersion { get; set; }
 
         public Reservation(){}
-        public Reservation(int reservationsNr, DateTime bis, DateTime von, int kundenId, Kunde kunde, int autoId,
+        public Reservation(int reservationsNr, DateTime bis, DateTime von, int kundeId, Kunde kunde, int autoId,
             Auto auto, byte[] rowVersion)
         {
             ReservationsNr = reservationsNr;
             Bis = bis;
             Von = von;
-            KundenId = kundenId;
+            KundeId = kundeId;
             Kunde = kunde;
             AutoId = autoId;
             Auto = auto;
