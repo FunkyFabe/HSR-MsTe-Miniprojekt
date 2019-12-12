@@ -18,29 +18,8 @@ namespace AutoReservation.BusinessLayer
         }
 
         public async Task<Auto> GetByPrimaryKey(int primaryKey) {
-            using AutoReservationContext context = new AutoReservationContext();
-            Auto foundAuto = context.Autos.Find(primaryKey);
-            return foundAuto;
-        }
-
-        public async void AddAuto<T>(T auto) {
-            using AutoReservationContext context = new AutoReservationContext();
-            context.Entry(auto).State = EntityState.Added;
-            //context.Autos.Add(auto);
-            context.SaveChanges();
-
-        }
-
-        public async void UpdateAuto(Auto auto) {
-            using AutoReservationContext context = new AutoReservationContext();
-            context.Entry(auto).State = EntityState.Modified;
-            context.SaveChanges();
-        }
-
-        public async void DeleteAuto(Auto auto) {
-            using AutoReservationContext context = new AutoReservationContext();
-            context.Entry(auto).State = EntityState.Deleted;
-            context.SaveChanges();
+            using AutoReservationContext context = new AutoReservationContext(); 
+            return context.Autos.Find(primaryKey);
         }
     }
 }

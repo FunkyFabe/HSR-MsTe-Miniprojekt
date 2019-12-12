@@ -46,7 +46,7 @@ namespace AutoReservation.BusinessLayer.Testing
             Auto auto = new LuxusklasseAuto { Marke = "Mercedes", Tagestarif = 200 };
 
             // act
-            _target.AddAuto<Auto>(auto);
+            _target.AddEntity<Auto>(auto);
 
             // assert
             Auto testAuto = _target.GetByPrimaryKey(5).Result;
@@ -63,7 +63,7 @@ namespace AutoReservation.BusinessLayer.Testing
 
             // act
             auto.Marke = testMarke;
-            _target.UpdateAuto(auto);
+            _target.UpdateEntity(auto);
 
             // assert
             Auto changedCar = _target.GetByPrimaryKey(primaryKey).Result;
@@ -77,7 +77,7 @@ namespace AutoReservation.BusinessLayer.Testing
             Auto auto = _target.GetByPrimaryKey(1).Result;
 
             // act
-            _target.DeleteAuto(auto);
+            _target.DeleteEntity(auto);
 
             List<Auto> listAfterDeletion = _target.GetAll().Result;
             // assert
