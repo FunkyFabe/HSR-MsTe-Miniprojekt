@@ -41,5 +41,10 @@ namespace AutoReservation.Dal.Entities
             Auto = auto;
             RowVersion = rowVersion;
         }
+
+        public Reservation(DateTime bis, DateTime von) {
+            Bis = bis;
+            Von = von;
+        }
     }
 }

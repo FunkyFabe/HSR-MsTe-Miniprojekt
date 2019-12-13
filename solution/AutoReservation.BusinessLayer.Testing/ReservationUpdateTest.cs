@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AutoReservation.Dal.Entities;
 using AutoReservation.TestEnvironment;
 using Xunit;
 
@@ -18,10 +19,19 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
             // arrange
+            int autoID = 2;
+            int primaryKey = 1;
+            Reservation res = _target.GetByPrimaryKey(primaryKey).Result;
+
             // act
+            res.AutoId = autoID;
+            _target.UpdateEntity(res);
+
             // assert
+            Reservation changedReservation = _target.GetByPrimaryKey(primaryKey).Result;
+
+            Assert.True(changedReservation.AutoId == autoID);
         }
     }
 }
