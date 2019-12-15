@@ -10,10 +10,11 @@ option csharp_namespace = "AutoReservation.Service.Grpc";
 package AutoReservation;
 
 service ReservationService {
-    rpc GetKunden (google.protobuf.Empty) returns (ReservationDtoList);
-    rpc GetKundeById (GetReservationRequest) returns (ReservationDto);
-    rpc InsertKunde (ReservationDto) returns (google.protobuf.Empty);
-    rpc UpdateKunde (ReservationDto) returns (google.protobuf.Empty);
+    rpc GetReservationen (google.protobuf.Empty) returns (ReservationDtoList);
+    rpc GetReservationById (GetReservationRequest) returns (ReservationDto);
+    rpc InsertReservation (ReservationDto) returns (ReservationDto);
+    rpc UpdateReservation (ReservationDto) returns (ReservationDto);
+    rpc DeleteReservation (ReservationDto) returns (ReservationDto);
 }
 
 message GetReservationRequest {
@@ -31,5 +32,4 @@ message ReservationDto {
     bytes row_version = 5;
     AutoDto auto = 6;
     KundeDto kunde = 7;
-    int32 kunde_id = 8;
 }

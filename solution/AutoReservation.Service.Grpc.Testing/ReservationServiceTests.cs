@@ -4,67 +4,109 @@ using AutoReservation.Service.Grpc.Testing.Common;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AutoReservation.Service.Grpc.Testing
 {
     public class ReservationServiceTests
         : ServiceTestBase
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly ReservationService.ReservationServiceClient _target;
         private readonly AutoService.AutoServiceClient _autoClient;
         private readonly KundeService.KundeServiceClient _kundeClient;
+        private readonly Timestamp _von;
+        private readonly Timestamp _bis;
 
-        public ReservationServiceTests(ServiceTestFixture serviceTestFixture)
+        public ReservationServiceTests(ServiceTestFixture serviceTestFixture, ITestOutputHelper testOutputHelper)
             : base(serviceTestFixture)
         {
+            _testOutputHelper = testOutputHelper;
             _target = new ReservationService.ReservationServiceClient(Channel);
             _autoClient = new AutoService.AutoServiceClient(Channel);
             _kundeClient = new KundeService.KundeServiceClient(Channel);
+            int year = DateTime.Now.Year + 1;
+            _von = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(year, 01, 10), DateTimeKind.Utc));
+            _bis = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(year, 01, 20), DateTimeKind.Utc));
         }
 
         [Fact]
         public async Task GetReservationenTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var request = new Empty();
+            var response = await _target.GetReservationenAsync(request);
+            Assert.Equal(4, response.Items.Count);
         }
 
         [Fact]
         public async Task GetReservationByIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            const int id = 1;
+            var request = new GetReservationRequest {IdFilter = id};
+            var response = await _target.GetReservationByIdAsync(request);
+            _testOutputHelper.WriteLine(response.ToString());
+            Assert.Equal(id, response.ReservationsNr);
+            Assert.Equal(_von, response.Von);
+            Assert.Equal(_bis, response.Bis);
+            _testOutputHelper.WriteLine(response.ToString());
         }
 
         [Fact]
         public async Task GetReservationByIdWithIllegalIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            const int invalidId = 1000;
+            var request = new GetReservationRequest {IdFilter = invalidId};
+            try
+            {
+                await _target.GetReservationByIdAsync(request);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.NotFound, e.StatusCode);
+            }
         }
 
         [Fact]
         public async Task InsertReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
+            var getResponse = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
+            Assert.Equal(reservationToInsert.Von, getResponse.Von);
+            Assert.Equal(reservationToInsert.Bis, getResponse.Bis);
+            Assert.Equal(reservationToInsert.Auto, getResponse.Auto);
+            Assert.Equal(reservationToInsert.Kunde, getResponse.Kunde);
         }
 
         [Fact]
         public async Task DeleteReservationTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
+            var reservationToDelete = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
+            _testOutputHelper.WriteLine(reservationToDelete.ToString());
+            await _target.DeleteReservationAsync(reservationToDelete);
+            try
+            {
+                await _target.GetReservationByIdAsync(new GetReservationRequest() {IdFilter = reservationToDelete.ReservationsNr});
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.NotFound, e.StatusCode);
+            }
         }
 
         [Fact]

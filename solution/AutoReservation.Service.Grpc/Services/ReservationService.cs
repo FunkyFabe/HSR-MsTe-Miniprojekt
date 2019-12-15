@@ -1,3 +1,11 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using AutoReservation.BusinessLayer;
+using AutoReservation.BusinessLayer.Exceptions;
+using AutoReservation.Dal.Entities;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 
 namespace AutoReservation.Service.Grpc.Services
@@ -5,10 +13,99 @@ namespace AutoReservation.Service.Grpc.Services
     internal class ReservationService : Grpc.ReservationService.ReservationServiceBase
     {
         private readonly ILogger<ReservationService> _logger;
+        private readonly ReservationManager _manager;
 
         public ReservationService(ILogger<ReservationService> logger)
         {
             _logger = logger;
+            _manager = new ReservationManager();
+        }
+
+        public override async Task<ReservationDtoList> GetReservationen(Empty request, ServerCallContext context)
+        {
+            try
+            {
+                var response = new ReservationDtoList();
+                response.Items.AddRange(await _manager.GetAll().ConvertToDtos());
+                return response;
+            }
+            catch (Exception)
+            {
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
+            }
+        }
+
+        public override async Task<ReservationDto> GetReservationById(GetReservationRequest request,
+            ServerCallContext context)
+        {
+            ReservationDto response;
+            try
+            {
+                response = await _manager.GetByPrimaryKey(request.IdFilter).ConvertToDto();
+            }
+            catch (Exception)
+            {
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
+            }
+
+            return response ?? throw new RpcException(new Status(StatusCode.NotFound, "ID is invalid."));
+        }
+
+        public override async Task<ReservationDto> InsertReservation(ReservationDto request, ServerCallContext context)
+        {
+            try
+            {
+                var entity = request.ConvertToEntity();
+                _manager.ReservationPossible(entity, entity.AutoId);
+                var response = await _manager.AddEntity(entity);
+                return response.ConvertToDto();
+            }
+            catch (Exception e)
+            {
+                if (e is InvaildDateRangException)
+                {
+                    throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));
+                }
+
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
+            }
+        }
+
+        public override async Task<ReservationDto> UpdateReservation(ReservationDto request, ServerCallContext context)
+        {
+            try
+            {
+                var entity = request.ConvertToEntity();
+                _manager.ReservationPossible(entity, entity.AutoId);
+                var response = await _manager.UpdateEntity(entity);
+                return response.ConvertToDto();
+            }
+            catch (Exception e)
+            {
+                if (e is OptimisticConcurrencyException<Auto> specificException)
+                {
+                    throw new RpcException(new Status(StatusCode.Aborted, e.Message), specificException.MergedEntity.ToString());
+                }
+                if (e is InvalidDataException)
+                {
+                    throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));   
+                }
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
+            }
+        }
+        
+        public override async Task<ReservationDto> DeleteReservation(ReservationDto request, ServerCallContext context)
+        {
+            try
+            {
+                var entity = request.ConvertToEntity();
+                var response = await _manager.DeleteEntity(entity);
+                return response.ConvertToDto();
+            }
+            catch (Exception)
+            {
+                throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
+            }
         }
     }
 }
