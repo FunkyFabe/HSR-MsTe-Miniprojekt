@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Diagnostics.Tracing;
 using System.Threading.Tasks;
 using AutoReservation.Service.Grpc.Testing.Common;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace AutoReservation.Service.Grpc.Testing
 {
     public class AutoServiceTests
         : ServiceTestBase
     {
+        private readonly ITestOutputHelper _testOutputHelper;
         private readonly AutoService.AutoServiceClient _target;
 
-        public AutoServiceTests(ServiceTestFixture serviceTestFixture)
+        public AutoServiceTests(ServiceTestFixture serviceTestFixture, ITestOutputHelper testOutputHelper)
             : base(serviceTestFixture)
         {
+            _testOutputHelper = testOutputHelper;
             _target = new AutoService.AutoServiceClient(Channel);
         }
 
@@ -22,64 +26,104 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task GetAutosTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var request = new Empty();
+            var response = await _target.GetAutosAsync(request);
+            Assert.Equal(4, response.Items.Count);
         }
 
         [Fact]
         public async Task GetAutoByIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            const int id = 1;
+            var request = new GetAutoRequest {IdFilter = id};
+            var response = await _target.GetAutoAsync(request);
+            Assert.Equal(id, response.Id);
+            Assert.Equal("Fiat Punto", response.Marke);
+            Assert.Equal(50, response.Tagestarif);
         }
 
         [Fact]
         public async Task GetAutoByIdWithIllegalIdTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            const int invalidId = 1000;
+            var request = new GetAutoRequest {IdFilter = invalidId};
+            try
+            {
+                await _target.GetAutoAsync(request);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.NotFound, e.StatusCode);
+            }
         }
 
         [Fact]
         public async Task InsertAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var insertResponse = await _target.InsertAutoAsync(autoToInsert);
+            var getResponse = await _target.GetAutoAsync(new GetAutoRequest {IdFilter = insertResponse.Id});
+            Assert.Equal(autoToInsert.Marke, getResponse.Marke);
+            Assert.Equal(autoToInsert.Tagestarif, getResponse.Tagestarif);
+            Assert.Equal(autoToInsert.AutoKlasse, getResponse.AutoKlasse);
         }
 
         [Fact]
         public async Task DeleteAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var autoToDelete = await _target.InsertAutoAsync(autoToInsert);
+            await _target.DeleteAutoAsync(autoToDelete);
+            try
+            {
+                await _target.GetAutoAsync(new GetAutoRequest {IdFilter = autoToDelete.Id});
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.NotFound, e.StatusCode);
+            }
         }
 
         [Fact]
         public async Task UpdateAutoTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            const int newTagestarif = 55;
+
+            var autoToUpdate = await _target.InsertAutoAsync(autoToInsert);
+            autoToUpdate.Tagestarif = newTagestarif;
+            var updateResponse = await _target.UpdateAutoAsync(autoToUpdate);
+
+            Assert.Equal(autoToInsert.Marke, updateResponse.Marke);
+            Assert.Equal(newTagestarif, updateResponse.Tagestarif);
+            Assert.Equal(autoToInsert.AutoKlasse, updateResponse.AutoKlasse);
         }
 
         [Fact]
         public async Task UpdateAutoWithOptimisticConcurrencyTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            const int newTagestarifA = 55;
+            const int newTagestarifB = 45;
+
+            var autoToUpdateA = await _target.InsertAutoAsync(autoToInsert);
+            autoToUpdateA.Tagestarif = newTagestarifA;
+            await _target.UpdateAutoAsync(autoToUpdateA);
+
+            var autoToUpdateB = autoToUpdateA;
+            autoToUpdateB.Tagestarif = newTagestarifB;
+            try
+            {
+                await _target.UpdateAutoAsync(autoToUpdateB);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.Aborted, e.StatusCode);
+            }
         }
     }
 }

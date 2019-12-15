@@ -9,8 +9,9 @@ package AutoReservation;
 service AutoService {
     rpc GetAutos (google.protobuf.Empty) returns (AutoDtoList);
     rpc GetAuto (GetAutoRequest) returns (AutoDto);
-    rpc InsertAuto (AutoDto) returns (google.protobuf.Empty);
-    rpc UpdateAuto (AutoDto) returns (google.protobuf.Empty);
+    rpc InsertAuto (AutoDto) returns (AutoDto);
+    rpc UpdateAuto (AutoDto) returns (AutoDto);
+    rpc DeleteAuto (AutoDto) returns (AutoDto);
 }
 
 message GetAutoRequest {
