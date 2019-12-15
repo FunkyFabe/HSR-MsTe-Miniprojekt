@@ -12,13 +12,11 @@ namespace AutoReservation.Service.Grpc.Testing
     public class AutoServiceTests
         : ServiceTestBase
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly AutoService.AutoServiceClient _target;
 
-        public AutoServiceTests(ServiceTestFixture serviceTestFixture, ITestOutputHelper testOutputHelper)
+        public AutoServiceTests(ServiceTestFixture serviceTestFixture)
             : base(serviceTestFixture)
         {
-            _testOutputHelper = testOutputHelper;
             _target = new AutoService.AutoServiceClient(Channel);
         }
 
