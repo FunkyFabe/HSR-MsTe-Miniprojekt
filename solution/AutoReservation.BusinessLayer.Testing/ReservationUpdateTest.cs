@@ -22,11 +22,11 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             int autoID = 2;
             int primaryKey = 1;
-            Reservation res = _target.GetByPrimaryKey(primaryKey).Result;
+            Reservation res = await _target.GetByPrimaryKey(primaryKey);
 
             // act
             res.AutoId = autoID;
-            _target.UpdateEntity(res);
+            await _target.UpdateEntity(res);
 
             // assert
             Reservation changedReservation = _target.GetByPrimaryKey(primaryKey).Result;

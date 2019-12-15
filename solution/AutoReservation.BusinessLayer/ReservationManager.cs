@@ -21,7 +21,7 @@ namespace AutoReservation.BusinessLayer
         public async Task<Reservation> GetByPrimaryKey(int primaryKey)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            return context.Reservationen.Find(primaryKey);
+            return await context.Reservationen.FindAsync(primaryKey);
         }
 
         public void ReservationPossible(Reservation reservation, int autoID)

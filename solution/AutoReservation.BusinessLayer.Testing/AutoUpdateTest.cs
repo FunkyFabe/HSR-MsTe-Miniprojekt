@@ -23,8 +23,7 @@ namespace AutoReservation.BusinessLayer.Testing
         public async Task GetAllAutosTest()
         {
             // arrange
-            Task<List<Auto>> taskList = _target.GetAll();
-            List<Auto> listAutos = taskList.Result;
+            List<Auto> listAutos = await _target.GetAll();
             // act
             // assert
             Assert.True(listAutos.Count == 4, "Count Should be 4 not: " + listAutos.Count);
@@ -46,7 +45,7 @@ namespace AutoReservation.BusinessLayer.Testing
             Auto auto = new LuxusklasseAuto { Marke = "Mercedes", Tagestarif = 200 };
 
             // act
-            _target.AddEntity<Auto>(auto);
+            await _target.AddEntity<Auto>(auto);
 
             // assert
             Auto testAuto = _target.GetByPrimaryKey(5).Result;
@@ -63,7 +62,7 @@ namespace AutoReservation.BusinessLayer.Testing
 
             // act
             auto.Marke = testMarke;
-            _target.UpdateEntity(auto);
+            await _target.UpdateEntity(auto);
 
             // assert
             Auto changedCar = _target.GetByPrimaryKey(primaryKey).Result;
@@ -77,7 +76,7 @@ namespace AutoReservation.BusinessLayer.Testing
             Auto auto = _target.GetByPrimaryKey(1).Result;
 
             // act
-            _target.DeleteEntity(auto);
+            await _target.DeleteEntity(auto);
 
             List<Auto> listAfterDeletion = _target.GetAll().Result;
             // assert
