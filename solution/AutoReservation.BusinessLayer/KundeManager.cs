@@ -20,7 +20,7 @@ namespace AutoReservation.BusinessLayer
         public async Task<Kunde> GetByPrimaryKey(int primaryKey)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            return context.Kunden.Find(primaryKey);
+            return await context.Kunden.FindAsync(primaryKey);
         }
     }
 }

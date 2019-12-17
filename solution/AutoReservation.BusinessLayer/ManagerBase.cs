@@ -1,4 +1,5 @@
-﻿using AutoReservation.BusinessLayer.Exceptions;
+﻿using System.Threading.Tasks;
+using AutoReservation.BusinessLayer.Exceptions;
 using AutoReservation.Dal;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,26 +18,26 @@ namespace AutoReservation.BusinessLayer
             return new OptimisticConcurrencyException<T>($"Update {typeof(T).Name}: Concurrency-Fehler", dbEntity);
         }
 
-        public async void AddEntity<T>(T entity)
+        public async Task<T> AddEntity<T>(T entity)
         {
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(entity).State = EntityState.Added;
-            //context.Autos.Add(auto);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            return entity;
         }
 
-        public async void UpdateEntity<T>(T entity)
+        public async Task UpdateEntity<T>(T entity)
         {
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(entity).State = EntityState.Modified;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
 
-        public async void DeleteEntity<T>(T entity)
+        public async Task DeleteEntity<T>(T entity)
         {
             using AutoReservationContext context = new AutoReservationContext();
             context.Entry(entity).State = EntityState.Deleted;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

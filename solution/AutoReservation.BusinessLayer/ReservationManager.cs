@@ -21,21 +21,36 @@ namespace AutoReservation.BusinessLayer
         public async Task<Reservation> GetByPrimaryKey(int primaryKey)
         {
             using AutoReservationContext context = new AutoReservationContext();
-            return context.Reservationen.Find(primaryKey);
+            var query =
+                from r in context.Reservationen
+                join k in context.Kunden
+                    on r.KundeId equals k.Id
+                join a in context.Autos
+                    on r.AutoId equals a.Id
+                where r.ReservationsNr == primaryKey
+                select new Reservation
+                {
+                    ReservationsNr = r.ReservationsNr,
+                    Bis = r.Bis,
+                    Von = r.Von,
+                    KundeId = k.Id,
+                    Kunde = k,
+                    AutoId = a.Id,
+                    Auto = a,
+                    RowVersion = r.RowVersion
+                };
+            var result = await query.ToListAsync();
+            return result.Count == 0 ? null : result[0];
         }
 
         public void ReservationPossible(Reservation reservation, int autoID)
         {
-
             CheckReservationLenght(reservation);
 
             //Get All Reservations for a Car
             List<Reservation> allReservations = GetAll().Result;
             List<Reservation> allReservationsForOneCar = allReservations.FindAll(
-                delegate (Reservation re)
-                {
-                    return re.AutoId == autoID;
-                });
+                delegate(Reservation re) { return re.AutoId == autoID; });
 
             foreach (Reservation res in allReservationsForOneCar)
             {
@@ -43,6 +58,7 @@ namespace AutoReservation.BusinessLayer
                 {
                     throw new InvaildDateRangException("Starpoint Reservation in between");
                 }
+
                 if (res.Von < reservation.Bis && res.Bis >= reservation.Bis)
                 {
                     throw new InvaildDateRangException("Endpoint Reservation in between");
@@ -52,14 +68,14 @@ namespace AutoReservation.BusinessLayer
 
         private void CheckReservationLenght(Reservation reservation)
         {
-
             int minReservationTimeSpan = 24;
 
             TimeSpan duration = reservation.Bis.Subtract(reservation.Von);
 
             if (duration.TotalHours < minReservationTimeSpan)
             {
-                throw new InvaildDateRangException("Reservation needs to be more then 24h is: " + duration.TotalHours.ToString() + " Hours");
+                throw new InvaildDateRangException("Reservation needs to be more then 24h is: " +
+                                                   duration.TotalHours.ToString() + " Hours");
             }
         }
     }

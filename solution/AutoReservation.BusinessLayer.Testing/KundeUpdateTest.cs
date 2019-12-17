@@ -26,7 +26,7 @@ namespace AutoReservation.BusinessLayer.Testing
 
             // act
             kunde.Nachname = nachName;
-            _target.UpdateEntity(kunde);
+            await _target.UpdateEntity(kunde);
 
             // assert
             Kunde changedKunde = _target.GetByPrimaryKey(primaryKey).Result;
