@@ -55,9 +55,8 @@ namespace AutoReservation.Service.Grpc.Services
         {
             try
             {
-                var entity = request.ConvertToEntity();
-                _manager.ReservationPossible(entity);
-                var response = await _manager.AddEntity(entity);
+                var reservation = request.ConvertToEntity();
+                var response = await _manager.AddEntity(reservation);
                 return response.ConvertToDto();
             }
             catch (Exception e)
@@ -66,7 +65,11 @@ namespace AutoReservation.Service.Grpc.Services
                 {
                     throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));
                 }
-
+                
+                if (e is AutoUnavailableException)
+                {
+                    throw new RpcException(new Status(StatusCode.ResourceExhausted, e.Message));
+                }
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
             }
         }
@@ -75,20 +78,23 @@ namespace AutoReservation.Service.Grpc.Services
         {
             try
             {
-                var entity = request.ConvertToEntity();
-                _manager.ReservationPossible(entity);
-                await _manager.UpdateEntity(entity);
+                var reservation = request.ConvertToEntity();
+                await _manager.UpdateEntity(reservation);
                 return new Empty();
             }
             catch (Exception e)
             {
-                if (e is OptimisticConcurrencyException<Auto> specificException)
+                if (e is OptimisticConcurrencyException<Reservation> specificException)
                 {
                     throw new RpcException(new Status(StatusCode.Aborted, e.Message), specificException.MergedEntity.ToString());
                 }
-                if (e is InvalidDataException)
+                if (e is InvaildDateRangException)
                 {
                     throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));   
+                }
+                if (e is AutoUnavailableException)
+                {
+                    throw new RpcException(new Status(StatusCode.ResourceExhausted, e.Message));
                 }
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
             }
@@ -98,14 +104,21 @@ namespace AutoReservation.Service.Grpc.Services
         {
             try
             {
-                var entity = request.ConvertToEntity();
-                await _manager.DeleteEntity(entity);
+                var reservation = request.ConvertToEntity();
+                await _manager.DeleteEntity(reservation);
                 return new Empty();
             }
             catch (Exception)
             {
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
             }
+        }
+
+        public override async Task<CheckAvailabilityResponse> CheckAvailability(ReservationDto request, ServerCallContext context)
+        {
+            var reservation = request.ConvertToEntity();
+            bool isAvailable = await _manager.IsAutoAvailable(reservation);
+            return new CheckAvailabilityResponse{AutoIsAvailable = isAvailable};
         }
     }
 }
