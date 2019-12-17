@@ -42,9 +42,11 @@ namespace AutoReservation.Dal.Entities
             RowVersion = rowVersion;
         }
 
-        public Reservation(DateTime bis, DateTime von) {
+        public Reservation(DateTime bis, DateTime von, int autoId)
+        {
             Bis = bis;
             Von = von;
+            AutoId = autoId;
         }
     }
 }

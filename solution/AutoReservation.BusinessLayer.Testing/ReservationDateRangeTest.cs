@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using AutoReservation.BusinessLayer.Exceptions;
 using AutoReservation.Dal.Entities;
 using AutoReservation.TestEnvironment;
 using Xunit;
@@ -30,13 +32,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //                 | ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 22, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 22, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                 _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -52,22 +54,12 @@ namespace AutoReservation.BusinessLayer.Testing
         {
             // less then 24 Hours
             // Arrange
-            Exception expectedExcetpion = null;
             DateTime start = new DateTime(2019, 12, 12, 0, 0, 0);
             DateTime end = new DateTime(2019, 12, 11, 12, 0, 0);
-            Reservation reservation = new Reservation(start, end);
+            Reservation reservation = new Reservation(start, end, 2);
             // Act
-            try
-            {
-                _target.ReservationPossible(reservation, 2);
-            }
-            catch (Exception ex)
-            {
-                expectedExcetpion = ex;
-            }
-
             // Assert
-            Assert.NotNull(expectedExcetpion);
+            Assert.ThrowsAsync<InvaildDateRangException>(async () => {  await _target.ReservationPossible(reservation); });
         }
 
         [Fact]
@@ -75,22 +67,11 @@ namespace AutoReservation.BusinessLayer.Testing
         {
             // Start and End reversed
             // Arrange
-            Exception expectedExcetpion = null;
             DateTime start = new DateTime(2019, 12, 12, 0, 0, 0);
             DateTime end = new DateTime(2019, 12, 11, 12, 0, 0);
-            Reservation reservation = new Reservation(start, end);
+            Reservation reservation = new Reservation(start, end, 2);
             // Act
-            try
-            {
-                _target.ReservationPossible(reservation, 2);
-            }
-            catch (Exception ex)
-            {
-                expectedExcetpion = ex;
-            }
-
-            // Assert
-            Assert.NotNull(expectedExcetpion);
+            Assert.ThrowsAsync<InvaildDateRangException>(async () => { await _target.ReservationPossible(reservation); });
         }
 
         [Fact]

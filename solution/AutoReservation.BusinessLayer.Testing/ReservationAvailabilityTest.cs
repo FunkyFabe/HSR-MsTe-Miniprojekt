@@ -22,13 +22,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //               | ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 20, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 20, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -45,13 +45,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //                 | ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 22, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 2, 15, 0, 0, 0), new DateTime(2020, 1, 22, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -70,13 +70,13 @@ namespace AutoReservation.BusinessLayer.Testing
             //| ---Date 2-- - |
             // act
             // assert
-            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2019, 12, 20, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2019, 12, 20, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -95,13 +95,13 @@ namespace AutoReservation.BusinessLayer.Testing
             //| ---Date 2--- |
             // act
             // assert
-            Reservation res = new Reservation(new DateTime(2020, 1, 9, 0, 0, 0), new DateTime(2019, 12, 20, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 1, 9, 0, 0, 0), new DateTime(2019, 12, 20, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -118,13 +118,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //    | ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 1, 15, 0, 0, 0), new DateTime(2020, 1, 25, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 1, 15, 0, 0, 0), new DateTime(2020, 1, 25, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -143,13 +143,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //    | ---Date 1--- |
             //| ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2019, 12, 15, 0, 0, 0), new DateTime(2020, 1, 15, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2019, 12, 15, 0, 0, 0), new DateTime(2020, 1, 15, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -166,12 +166,12 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //| --------Date 2-------- |
-            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2020, 12, 25, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2020, 12, 25, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -187,13 +187,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| --------Date 1-------- |
             //| ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2020, 1, 15, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 1, 10, 0, 0, 0), new DateTime(2020, 1, 15, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {
@@ -210,13 +210,13 @@ namespace AutoReservation.BusinessLayer.Testing
             // arrange
             //| ---Date 1--- |
             //| ---Date 2--- |
-            Reservation res = new Reservation(new DateTime(2020, 5, 19, 0, 0, 0), new DateTime(2020, 6, 19, 0, 0, 0));
+            Reservation res = new Reservation(new DateTime(2020, 5, 19, 0, 0, 0), new DateTime(2020, 6, 19, 0, 0, 0), 2);
             Exception expectedExcetpion = null;
 
             // act
             try
             {
-                _target.ReservationPossible(res, 2);
+                await _target.ReservationPossible(res);
             }
             catch (Exception ex)
             {

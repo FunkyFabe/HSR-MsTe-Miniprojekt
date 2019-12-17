@@ -1,6 +1,7 @@
 ﻿using AutoReservation.BusinessLayer.Exceptions;
 using AutoReservation.Dal;
 using AutoReservation.Dal.Entities;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -43,27 +44,46 @@ namespace AutoReservation.BusinessLayer
             return result.Count == 0 ? null : result[0];
         }
 
-        public void ReservationPossible(Reservation reservation, int autoID)
+        public async override Task UpdateEntity<T>(T entity)
+        {
+            await ReservationPossible(entity as Reservation);
+            await base.UpdateEntity(entity);
+        }
+
+        public async override Task<T> AddEntity<T>(T entity)
+        {
+            await ReservationPossible(entity as Reservation);
+            return await base.AddEntity(entity);
+        }
+
+        public async Task ReservationPossible(Reservation reservation)
         {
             CheckReservationLenght(reservation);
+            if (!await IsAutoAvailable(reservation))
+            {
+                throw new AutoUnavailableException("Auto is not available.");
+            }
+        }
 
+        public async Task<bool> IsAutoAvailable(Reservation reservation) {
             //Get All Reservations for a Car
-            List<Reservation> allReservations = GetAll().Result;
+            List<Reservation> allReservations = await GetAll();
             List<Reservation> allReservationsForOneCar = allReservations.FindAll(
-                delegate(Reservation re) { return re.AutoId == autoID; });
+                delegate (Reservation re) { return re.AutoId == reservation.AutoId; });
 
             foreach (Reservation res in allReservationsForOneCar)
             {
                 if (res.Von <= reservation.Von && res.Bis > reservation.Von)
                 {
-                    throw new InvaildDateRangException("Starpoint Reservation in between");
+                    return false; 
                 }
 
                 if (res.Von < reservation.Bis && res.Bis >= reservation.Bis)
                 {
-                    throw new InvaildDateRangException("Endpoint Reservation in between");
+                    return false;
                 }
             }
+            return true;
         }
 
         private void CheckReservationLenght(Reservation reservation)
