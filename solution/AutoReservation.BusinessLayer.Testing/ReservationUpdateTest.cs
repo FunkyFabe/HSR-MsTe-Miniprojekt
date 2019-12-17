@@ -19,6 +19,7 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateReservationTest()
         {
+            //TODO
             // arrange
             int autoID = 2;
             int primaryKey = 1;
@@ -29,7 +30,7 @@ namespace AutoReservation.BusinessLayer.Testing
             await _target.UpdateEntity(res);
 
             // assert
-            Reservation changedReservation = _target.GetByPrimaryKey(primaryKey).Result;
+            Reservation changedReservation = await _target.GetByPrimaryKey(primaryKey);
 
             Assert.True(changedReservation.AutoId == autoID);
         }

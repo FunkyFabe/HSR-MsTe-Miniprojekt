@@ -56,7 +56,7 @@ namespace AutoReservation.Service.Grpc.Services
             try
             {
                 var entity = request.ConvertToEntity();
-                _manager.ReservationPossible(entity, entity.AutoId);
+                _manager.ReservationPossible(entity);
                 var response = await _manager.AddEntity(entity);
                 return response.ConvertToDto();
             }
@@ -76,7 +76,7 @@ namespace AutoReservation.Service.Grpc.Services
             try
             {
                 var entity = request.ConvertToEntity();
-                _manager.ReservationPossible(entity, entity.AutoId);
+                _manager.ReservationPossible(entity);
                 await _manager.UpdateEntity(entity);
                 return new Empty();
             }
