@@ -73,14 +73,18 @@ namespace AutoReservation.BusinessLayer
 
             foreach (Reservation res in allReservationsForOneCar)
             {
-                if (res.Von <= reservation.Von && res.Bis > reservation.Von)
+                if (res.ReservationsNr == reservation.ReservationsNr) { }
+                else
                 {
-                    return false; 
-                }
+                    if (res.Von <= reservation.Von && res.Bis > reservation.Von)
+                    {
+                        return false;
+                    }
 
-                if (res.Von < reservation.Bis && res.Bis >= reservation.Bis)
-                {
-                    return false;
+                    if (res.Von < reservation.Bis && res.Bis >= reservation.Bis)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

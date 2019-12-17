@@ -19,9 +19,8 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public async Task UpdateReservationTest()
         {
-            //TODO
             // arrange
-            int autoID = 2;
+            int autoID = 4;
             int primaryKey = 1;
             Reservation res = await _target.GetByPrimaryKey(primaryKey);
 
