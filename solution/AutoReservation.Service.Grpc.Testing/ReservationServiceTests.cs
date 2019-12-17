@@ -208,21 +208,34 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task CheckAvailabilityIsTrueTest()
         {
-            //TODO: Implement service in business layer.
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            await _target.InsertReservationAsync(reservationToInsert);
+
+            var response = await _target.CheckAvailabilityAsync(reservationToInsert);
+            Assert.False(response.AutoIsAvailable);
+
         }
 
         [Fact]
         public async Task CheckAvailabilityIsFalseTest()
         {
-            //TODO: Implement service in business layer.
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            await _target.InsertReservationAsync(reservationToInsert);
+
+            var response = await _target.CheckAvailabilityAsync(reservationToInsert);
+            Assert.False(response.AutoIsAvailable);
         }
     }
 }

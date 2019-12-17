@@ -15,10 +15,15 @@ service ReservationService {
     rpc InsertReservation (ReservationDto) returns (ReservationDto);
     rpc UpdateReservation (ReservationDto) returns (google.protobuf.Empty);
     rpc DeleteReservation (ReservationDto) returns (google.protobuf.Empty);
+    rpc CheckAvailability (ReservationDto) returns (CheckAvailabilityResponse);
 }
 
 message GetReservationRequest {
     int32 id_filter = 1;
+}
+
+message CheckAvailabilityResponse {
+    bool auto_is_available = 1;
 }
 
 message ReservationDtoList {
