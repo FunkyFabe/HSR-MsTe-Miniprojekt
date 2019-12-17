@@ -61,10 +61,9 @@ namespace AutoReservation.Service.Grpc.Testing
             var autoToInsert = new AutoDto
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
             var insertResponse = await _target.InsertAutoAsync(autoToInsert);
-            var getResponse = await _target.GetAutoAsync(new GetAutoRequest {IdFilter = insertResponse.Id});
-            Assert.Equal(autoToInsert.Marke, getResponse.Marke);
-            Assert.Equal(autoToInsert.Tagestarif, getResponse.Tagestarif);
-            Assert.Equal(autoToInsert.AutoKlasse, getResponse.AutoKlasse);
+            Assert.Equal(autoToInsert.Marke, insertResponse.Marke);
+            Assert.Equal(autoToInsert.Tagestarif, insertResponse.Tagestarif);
+            Assert.Equal(autoToInsert.AutoKlasse, insertResponse.AutoKlasse);
         }
 
         [Fact]
@@ -93,11 +92,12 @@ namespace AutoReservation.Service.Grpc.Testing
 
             var autoToUpdate = await _target.InsertAutoAsync(autoToInsert);
             autoToUpdate.Tagestarif = newTagestarif;
-            var updateResponse = await _target.UpdateAutoAsync(autoToUpdate);
+            await _target.UpdateAutoAsync(autoToUpdate);
+            var response = await _target.GetAutoAsync(new GetAutoRequest {IdFilter = autoToUpdate.Id});
 
-            Assert.Equal(autoToInsert.Marke, updateResponse.Marke);
-            Assert.Equal(newTagestarif, updateResponse.Tagestarif);
-            Assert.Equal(autoToInsert.AutoKlasse, updateResponse.AutoKlasse);
+            Assert.Equal(autoToInsert.Marke, response.Marke);
+            Assert.Equal(newTagestarif, response.Tagestarif);
+            Assert.Equal(autoToInsert.AutoKlasse, response.AutoKlasse);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace AutoReservation.Service.Grpc.Testing
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
             const int newTagestarifA = 55;
             const int newTagestarifB = 45;
-
+            
             var autoToUpdateA = await _target.InsertAutoAsync(autoToInsert);
             autoToUpdateA.Tagestarif = newTagestarifA;
             await _target.UpdateAutoAsync(autoToUpdateA);

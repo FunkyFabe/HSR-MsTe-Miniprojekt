@@ -63,13 +63,13 @@ namespace AutoReservation.Service.Grpc.Services
             }
         }
 
-        public override async Task<KundeDto> UpdateKunde(KundeDto request, ServerCallContext context)
+        public override async Task<Empty> UpdateKunde(KundeDto request, ServerCallContext context)
         {
             try
             {
                 var entity = request.ConvertToEntity();
-                var response = await _manager.UpdateEntity(entity);
-                return response.ConvertToDto();
+                await _manager.UpdateEntity(entity);
+                return new Empty();
             }
             catch (Exception e)
             {
@@ -81,13 +81,13 @@ namespace AutoReservation.Service.Grpc.Services
             }
         }
 
-        public override async Task<KundeDto> DeleteKunde(KundeDto request, ServerCallContext context)
+        public override async Task<Empty> DeleteKunde(KundeDto request, ServerCallContext context)
         {
             try
             {
                 var entity = request.ConvertToEntity();
-                var response = await _manager.DeleteEntity(entity);
-                return response.ConvertToDto();
+                await _manager.DeleteEntity(entity);
+                return new Empty();
             }
             catch (Exception)
             {

@@ -71,14 +71,14 @@ namespace AutoReservation.Service.Grpc.Services
             }
         }
 
-        public override async Task<ReservationDto> UpdateReservation(ReservationDto request, ServerCallContext context)
+        public override async Task<Empty> UpdateReservation(ReservationDto request, ServerCallContext context)
         {
             try
             {
                 var entity = request.ConvertToEntity();
                 _manager.ReservationPossible(entity, entity.AutoId);
-                var response = await _manager.UpdateEntity(entity);
-                return response.ConvertToDto();
+                await _manager.UpdateEntity(entity);
+                return new Empty();
             }
             catch (Exception e)
             {
@@ -94,13 +94,13 @@ namespace AutoReservation.Service.Grpc.Services
             }
         }
         
-        public override async Task<ReservationDto> DeleteReservation(ReservationDto request, ServerCallContext context)
+        public override async Task<Empty> DeleteReservation(ReservationDto request, ServerCallContext context)
         {
             try
             {
                 var entity = request.ConvertToEntity();
-                var response = await _manager.DeleteEntity(entity);
-                return response.ConvertToDto();
+                await _manager.DeleteEntity(entity);
+                return new Empty();
             }
             catch (Exception)
             {

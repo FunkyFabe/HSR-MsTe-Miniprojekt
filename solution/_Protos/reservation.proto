@@ -13,8 +13,8 @@ service ReservationService {
     rpc GetReservationen (google.protobuf.Empty) returns (ReservationDtoList);
     rpc GetReservationById (GetReservationRequest) returns (ReservationDto);
     rpc InsertReservation (ReservationDto) returns (ReservationDto);
-    rpc UpdateReservation (ReservationDto) returns (ReservationDto);
-    rpc DeleteReservation (ReservationDto) returns (ReservationDto);
+    rpc UpdateReservation (ReservationDto) returns (google.protobuf.Empty);
+    rpc DeleteReservation (ReservationDto) returns (google.protobuf.Empty);
 }
 
 message GetReservationRequest {
