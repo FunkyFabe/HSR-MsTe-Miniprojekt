@@ -97,7 +97,6 @@ namespace AutoReservation.Service.Grpc.Testing
                 {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
             var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
             var reservationToDelete = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
-            _testOutputHelper.WriteLine(reservationToDelete.ToString());
             await _target.DeleteReservationAsync(reservationToDelete);
             try
             {
@@ -112,7 +111,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task UpdateReservationTest()
         {
-            //TODO: Test fails because InsertReservationAsync() doesn't return auto and kunde property.
+            // TODO: Fix ReservationPossible (Bei einem Update, darf die selbe Reservation nicht berücksichtigt werden.=
             var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var autoToInsert = new AutoDto
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
@@ -120,19 +119,24 @@ namespace AutoReservation.Service.Grpc.Testing
             var reservationToInsert = new ReservationDto
                 {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
             
-            var reservationToUpdate = await _target.InsertReservationAsync(reservationToInsert);
-            var newBis = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(2019, 01, 30), DateTimeKind.Utc));
+            var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
+            var reservationToUpdate = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
+            var newBis = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(3019, 01, 20), DateTimeKind.Utc));
             reservationToUpdate.Bis = newBis;
-            var updateResponse = await _target.UpdateReservationAsync(reservationToUpdate);
+            _testOutputHelper.WriteLine(reservationToUpdate.ToString());
+            await _target.UpdateReservationAsync(reservationToUpdate);
+            var getResponse = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
             
-//            Assert.Equal(reservationToUpdate.Von, updateResponse.Von);
-//            Assert.Equal(reservationToUpdate.Bis, updateResponse.Bis);
-
+            Assert.Equal(reservationToUpdate.Von, getResponse.Von);
+            Assert.Equal(reservationToUpdate.Bis, getResponse.Bis);
+            Assert.Equal(reservationToUpdate.Auto, getResponse.Auto);
+            Assert.Equal(reservationToUpdate.Kunde, getResponse.Kunde);
         }
 
         [Fact]
         public async Task UpdateReservationWithOptimisticConcurrencyTest()
         {
+            //TODO: Implemente OptimisticConcurrency
             throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
@@ -142,6 +146,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task InsertReservationWithInvalidDateRangeTest()
         {
+            //TODO: Adjust exception according to business layer. (First implement different exceptions in business layer.)
             var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var autoToInsert = new AutoDto
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
@@ -161,6 +166,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task InsertReservationWithAutoNotAvailableTest()
         {
+            //TODO: Adjust exception according to business layer. (First implement different exceptions in business layer.)
             var kunde1 = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var kunde2 = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 2});
             var autoToInsert = new AutoDto
@@ -193,6 +199,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task UpdateReservationWithAutoNotAvailableTest()
         {
+            
             throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
@@ -202,6 +209,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task CheckAvailabilityIsTrueTest()
         {
+            //TODO: Implement service in business layer.
             throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
@@ -211,6 +219,7 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task CheckAvailabilityIsFalseTest()
         {
+            //TODO: Implement service in business layer.
             throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
