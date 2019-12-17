@@ -64,6 +64,7 @@ namespace AutoReservation.Service.Grpc.Testing
             Assert.Equal(autoToInsert.Marke, insertResponse.Marke);
             Assert.Equal(autoToInsert.Tagestarif, insertResponse.Tagestarif);
             Assert.Equal(autoToInsert.AutoKlasse, insertResponse.AutoKlasse);
+            Assert.NotEqual(0, insertResponse.Id);
         }
 
         [Fact]

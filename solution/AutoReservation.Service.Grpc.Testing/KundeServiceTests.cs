@@ -61,10 +61,10 @@ namespace AutoReservation.Service.Grpc.Testing
             var kundeToInsert = new KundeDto
                 {Vorname = "Seven", Nachname = "Müller", Geburtsdatum = _geburtsdatum};
             var insertResponse = await _target.InsertKundeAsync(kundeToInsert);
-            var getResponse = await _target.GetKundeAsync(new GetKundeRequest() {IdFilter = insertResponse.Id});
-            Assert.Equal(kundeToInsert.Vorname, getResponse.Vorname);
-            Assert.Equal(kundeToInsert.Nachname, getResponse.Nachname);
-            Assert.Equal(_geburtsdatum, getResponse.Geburtsdatum);
+            Assert.Equal(kundeToInsert.Vorname, insertResponse.Vorname);
+            Assert.Equal(kundeToInsert.Nachname, insertResponse.Nachname);
+            Assert.Equal(_geburtsdatum, insertResponse.Geburtsdatum);
+            Assert.NotEqual(0, insertResponse.Id);
         }
 
         [Fact]
@@ -93,11 +93,12 @@ namespace AutoReservation.Service.Grpc.Testing
 
             var kundeToUpdate = await _target.InsertKundeAsync(kundeToInsert);
             kundeToUpdate.Vorname = newVorname;
-            var updateResponse = await _target.UpdateKundeAsync(kundeToUpdate);
+            await _target.UpdateKundeAsync(kundeToUpdate);
+            var response = await _target.GetKundeAsync(new GetKundeRequest {IdFilter = kundeToUpdate.Id});
 
-//            Assert.Equal(kundeToInsert.Nachname, updateResponse.Nachname);
-//            Assert.Equal(newVorname, updateResponse.Vorname);
-//            Assert.Equal(kundeToInsert.Geburtsdatum, updateResponse.Geburtsdatum);
+            Assert.Equal(kundeToInsert.Nachname, response.Nachname);
+            Assert.Equal(newVorname, response.Vorname);
+            Assert.Equal(kundeToInsert.Geburtsdatum, response.Geburtsdatum);
         }
 
         [Fact]
