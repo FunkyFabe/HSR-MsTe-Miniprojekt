@@ -111,7 +111,6 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task UpdateReservationTest()
         {
-            // TODO: Fix ReservationPossible (Bei einem Update, darf die selbe Reservation nicht berücksichtigt werden.=
             var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var autoToInsert = new AutoDto
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
