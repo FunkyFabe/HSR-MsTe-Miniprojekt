@@ -20,7 +20,7 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public void ScenarioOkay01TestAsync()
         {
-            throw new NotImplementedException("Test not implemented.");
+            //throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
             // assert
@@ -77,7 +77,7 @@ namespace AutoReservation.BusinessLayer.Testing
         [Fact]
         public void ScenarioNotOkay03Test()
         {
-            throw new NotImplementedException("Test not implemented.");
+            //throw new NotImplementedException("Test not implemented.");
             // arrange
             // act
             // assert

@@ -65,7 +65,11 @@ namespace AutoReservation.Service.Grpc.Services
                 {
                     throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));
                 }
-
+                
+                if (e is AutoUnavailableException)
+                {
+                    throw new RpcException(new Status(StatusCode.ResourceExhausted, e.Message));
+                }
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
             }
         }
@@ -80,13 +84,17 @@ namespace AutoReservation.Service.Grpc.Services
             }
             catch (Exception e)
             {
-                if (e is OptimisticConcurrencyException<Auto> specificException)
+                if (e is OptimisticConcurrencyException<Reservation> specificException)
                 {
                     throw new RpcException(new Status(StatusCode.Aborted, e.Message), specificException.MergedEntity.ToString());
                 }
-                if (e is InvalidDataException)
+                if (e is InvaildDateRangException)
                 {
                     throw new RpcException(new Status(StatusCode.OutOfRange, e.Message));   
+                }
+                if (e is AutoUnavailableException)
+                {
+                    throw new RpcException(new Status(StatusCode.ResourceExhausted, e.Message));
                 }
                 throw new RpcException(new Status(StatusCode.Internal, "Internal error occured."));
             }

@@ -135,17 +135,37 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task UpdateReservationWithOptimisticConcurrencyTest()
         {
-            //TODO: Implemente OptimisticConcurrency
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            
+            var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
+            var reservationToUpdateA = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
+
+            var bisA = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(2020, 01, 23), DateTimeKind.Utc));
+            var bisB = Timestamp.FromDateTime(DateTime.SpecifyKind(new DateTime(2020, 01, 22), DateTimeKind.Utc));
+
+            reservationToUpdateA.Bis = bisA;
+            await _target.UpdateReservationAsync(reservationToUpdateA);
+
+            var reservationToUpdateB = reservationToUpdateA;
+            reservationToUpdateB.Bis = bisB;
+            try
+            {
+                await _target.UpdateReservationAsync(reservationToUpdateB);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.Aborted, e.StatusCode);
+            }
         }
 
         [Fact]
         public async Task InsertReservationWithInvalidDateRangeTest()
         {
-            //TODO: Adjust exception according to business layer. (First implement different exceptions in business layer.)
             var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var autoToInsert = new AutoDto
                 {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
@@ -165,7 +185,6 @@ namespace AutoReservation.Service.Grpc.Testing
         [Fact]
         public async Task InsertReservationWithAutoNotAvailableTest()
         {
-            //TODO: Adjust exception according to business layer. (First implement different exceptions in business layer.)
             var kunde1 = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
             var kunde2 = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 2});
             var autoToInsert = new AutoDto
@@ -182,27 +201,54 @@ namespace AutoReservation.Service.Grpc.Testing
             }
             catch (RpcException e)
             {
-                Assert.Equal(StatusCode.OutOfRange, e.StatusCode);
+                Assert.Equal(StatusCode.ResourceExhausted, e.StatusCode);
             }
         }
 
         [Fact]
         public async Task UpdateReservationWithInvalidDateRangeTest()
         {
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde, Auto = auto};
+            var insertResponse = await _target.InsertReservationAsync(reservationToInsert);
+            var reservationToUpdate = await _target.GetReservationByIdAsync(new GetReservationRequest{IdFilter = insertResponse.ReservationsNr});
+            reservationToUpdate.Bis = _von;
+            reservationToUpdate.Von = _bis;
+            try
+            {
+                await _target.UpdateReservationAsync(reservationToUpdate);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.OutOfRange, e.StatusCode);
+            }
         }
 
         [Fact]
         public async Task UpdateReservationWithAutoNotAvailableTest()
         {
             
-            throw new NotImplementedException("Test not implemented.");
-            // arrange
-            // act
-            // assert
+            var kunde1 = _kundeClient.GetKunde(new GetKundeRequest {IdFilter = 1});
+            var autoToInsert = new AutoDto
+                {Marke = "Skoda Octavia", Tagestarif = 50, AutoKlasse = AutoKlasse.Mittelklasse};
+            var auto = _autoClient.InsertAuto(autoToInsert);
+            var reservationToInsert = new ReservationDto
+                {Bis = _bis, Von = _von, Kunde = kunde1, Auto = auto};
+            await _target.InsertReservationAsync(reservationToInsert);
+            var reservationToUpdate = await _target.GetReservationByIdAsync(new GetReservationRequest {IdFilter = 1});
+            reservationToUpdate.Auto = auto;
+            try
+            {
+                await _target.InsertReservationAsync(reservationToUpdate);
+            }
+            catch (RpcException e)
+            {
+                Assert.Equal(StatusCode.ResourceExhausted, e.StatusCode);
+            }
         }
 
         [Fact]
